@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>System Notice</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: #050000;
+  }
+
+  body {
+    height: 100dvh;
+    color: #ff2020;
+    font-family: monospace;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+    overflow: hidden;
+  }
+
+  #box {
+    width: 85%;
+    max-width: 950px;
+    flex-shrink: 0;
+    overflow-wrap: anywhere;
+    transform: scale(var(--content-scale, 1));
+    transform-origin: center;
+  }
+
+  h1 {
+    margin: 0 0 35px;
+    font-size: clamp(38px, 6vw, 70px);
+    letter-spacing: 4px;
+    animation: flicker 0.16s infinite;
+  }
+
+  .warning {
+    font-size: clamp(18px, 2.5vw, 28px);
+    line-height: 1.6;
+  }
+
+  .important {
+    font-weight: bold;
+    color: #ff0000;
+    font-size: 1.2em;
+  }
+
+  #label {
+    margin-top: 45px;
+    font-size: 18px;
+    color: #a00000;
+    letter-spacing: 4px;
+  }
+
+  #count {
+    margin-top: 10px;
+    font-size: clamp(100px, 18vw, 190px);
+    font-weight: bold;
+  }
+
+  @keyframes flicker {
+    0%   { opacity: 1; }
+    20%  { opacity: 0.45; }
+    30%  { opacity: 1; }
+    70%  { opacity: 0.7; }
+    75%  { opacity: 0.25; }
+    100% { opacity: 1; }
+  }
+</style>
+</head>
+
+<body>
+
+<div id="box">
+
+  <h1>YOUR ITEMS HAVE BEEN ENCRYPTED</h1>
+
+  <div class="warning">
+
+    <div class="important">
+      DO NOT REMOVE THIS DEVICE
+    </div>
+
+    <br>
+
+    Removing this device will cause the encryption key
+    to be permanently deleted.
+
+    <br><br>
+
+    FILES CANNOT BE RECOVERED WITHOUT THE KEY.
+
+  </div>
+
+  <div id="label">
+    KEY DELETION IN
+  </div>
+
+  <div id="count">
+    10
+  </div>
+
+</div>
+
+<script>
+  const box = document.getElementById("box");
+
+  function fitContent() {
+    // Reserve space on every edge for the countdown's movement.
+    const width = document.documentElement.clientWidth;
+    const height = document.body.clientHeight;
+    const scale = Math.min(
+      1,
+      Math.max(1, width - 48) / box.offsetWidth,
+      Math.max(1, height - 48) / box.offsetHeight
+    );
+
+    box.style.setProperty("--content-scale", scale);
+  }
+
+  const contentObserver = new ResizeObserver(fitContent);
+  contentObserver.observe(box);
+  window.addEventListener("resize", fitContent);
+  fitContent();
+
+  let time = 10;
+
+  const count = document.getElementById("count");
+
+  const timer = setInterval(() => {
+
+    time--;
+
+    count.textContent = time;
+
+    // Shake more aggressively as countdown approaches zero
+    if (time <= 5 && time > 0) {
+
+      const amount = (6 - time) * 2;
+
+      const x =
+        Math.random() * amount * 2 - amount;
+
+      const y =
+        Math.random() * amount * 2 - amount;
+
+      document.body.style.transform =
+        `translate(${x}px, ${y}px)`;
+    }
+
+    // Countdown finished
+    if (time <= 0) {
+
+      clearInterval(timer);
+
+      // Reset movement
+      document.body.style.transform = "none";
+
+      // Remove everything
+      document.body.innerHTML = "";
+
+      // Completely black screen
+      document.documentElement.style.background = "#000";
+      document.body.style.background = "#000";
+
+      document.body.style.display = "block";
+    }
+
+  }, 1000);
+</script>
+
+</body>
+</html>
